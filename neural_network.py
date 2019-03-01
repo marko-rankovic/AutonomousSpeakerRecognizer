@@ -98,7 +98,7 @@ class SpeakerRecognizer(object):
 
     def trainNetwork(self):
         """Perform model training"""
-        self.Sxx_array = Sxx_array.reshape(self.n_samples + self.n_user_inputs, 12, 450)
+        self.Sxx_array = self.Sxx_array.reshape(self.n_samples + self.n_user_inputs, 12, 450)
         self.Y_array = np.zeros(self.n_samples + self.n_user_inputs)
         self.Y_array[self.n_samples:] = 1
     
@@ -118,7 +118,6 @@ class SpeakerRecognizer(object):
         self.model.add(Dense(64))
         self.model.add(Flatten())
         self.model.add(Dense(1))
-        self.model.add()
 
         self.model.compile(loss='mean_squared_error', metrics=['accuracy'], optimizer='nadam')
         self.model.fit(xtrain, ytrain, batch_size=32, epochs=20, validation_data=(xtest,ytest))
@@ -128,4 +127,5 @@ class SpeakerRecognizer(object):
     def testWithVoice(self):
         test_data = VoiceProcessing.sayKeyword('water', 'data/testAudio.wav')
         test_padded = VoiceProcessing.createPaddedSpectrogram(test_data)
-        self.model.predict(test_padded.reshape(1,12,450))
+        result = self.model.predict(test_padded.reshape(1,12,450))
+        print (result)
